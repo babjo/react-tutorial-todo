@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TodoItem from './TodoItem';
 import Immutable from 'immutable';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 export default class TodoApp extends Component {
 
@@ -34,15 +35,22 @@ export default class TodoApp extends Component {
 	}
 
 	render(){
-		return (<div>
-			<ul>{this.state.todoList.map(function(todo, i){
+		var todos = this.state.todoList.map(function(todo, i){
 					let boundClick= this.handleClick.bind(this, i);
-					return <TodoItem todo={todo} key={i} onClick={boundClick}/>
-		    	}, this)}</ul>
+					return (<TodoItem todo={todo} key={i} onClick={boundClick}/>);
+		    	}, this);
+		return (<div>
+			<ul>
+				<ReactCSSTransitionGroup transitionName="example"  transitionEnterTimeout={500} transitionLeaveTimeout={300}>
+					{todos}
+				</ReactCSSTransitionGroup>
+			</ul>
+			<ReactCSSTransitionGroup transitionName="example" transitionAppear={true} transitionAppearTimeout={500}>
 			<form onSubmit={this.handleSubmit.bind(this)}>
 				<input type="text" value={this.state.value} onChange={this.handleChange.bind(this)}/>
 				<input type="submit" value="추가"/>
 			</form>
+			</ReactCSSTransitionGroup>
 			</div>)
 	}
 };
