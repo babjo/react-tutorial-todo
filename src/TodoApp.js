@@ -3,17 +3,25 @@ import TodoItem from './TodoItem';
 import Immutable from 'immutable';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import store from './store';
+import {addTodo, removeTodo} from './actions';
+import {INITIAL_STATE} from './core';
 
 export default class TodoApp extends Component {
 
 	constructor(props){
 		super(props);
-		this.state = { value : '', todoList : props.todoList };
+		this.state = { value : '', todoList : INITIAL_STATE };
 		this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+
+		let component = this;
+		store.subscribe(() => {
+			component.setState({todoList: store.getState()});
+		});
 	}
 
 	handleClick(id){
-		this.removeTodo(id);
+		store.dispatch(removeTodo(id));
 	}
 
 	handleChange(e){
@@ -22,16 +30,8 @@ export default class TodoApp extends Component {
 
 	handleSubmit(e){
 		e.preventDefault();
-		this.addTodo(this.state.value);
+		store.dispatch(addTodo(this.state.value));
 		this.setState({value: ''});
-	}
-
-	addTodo(text){
-		this.setState({todoList: this.state.todoList.push(text)});
-	}
-
-	removeTodo(id){
-		this.setState({todoList: this.state.todoList.delete(id)});
 	}
 
 	render(){
